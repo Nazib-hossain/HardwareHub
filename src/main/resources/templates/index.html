@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: header-css('Dashboard — HardwareHub')}"></head>
+<body style="background-color: var(--bg-main);">
+
+<!-- Navbar & Category Header -->
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <!-- StarTech / Techland Feature Banner -->
+    <div class="promo-bar">
+        <div class="promo-item">
+            <i class="bi bi-shield-check"></i>
+            <div>
+                <div class="promo-item-title">100% Original Products</div>
+                <div class="promo-item-desc">Authorized distributor warranty</div>
+            </div>
+        </div>
+        <div class="promo-item d-none d-md-flex">
+            <i class="bi bi-truck"></i>
+            <div>
+                <div class="promo-item-title">Fast Delivery in BD</div>
+                <div class="promo-item-desc">Express shipping across 64 districts</div>
+            </div>
+        </div>
+        <div class="promo-item d-none d-lg-flex">
+            <i class="bi bi-headset"></i>
+            <div>
+                <div class="promo-item-title">Expert Tech Support</div>
+                <div class="promo-item-desc">Dedicated hardware specialists</div>
+            </div>
+        </div>
+        <div class="promo-item">
+            <i class="bi bi-arrow-repeat"></i>
+            <div>
+                <div class="promo-item-title">Hassle-Free Returns</div>
+                <div class="promo-item-desc">3-day easy replacement policy</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Inventory Stats Row (StarTech Counter Boxes) -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="stat-box">
+                <div class="stat-icon-wrapper blue">
+                    <i class="bi bi-gpu-card"></i>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${totalProducts}">150</div>
+                    <div class="stat-title">Total Products</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-box">
+                <div class="stat-icon-wrapper red">
+                    <i class="bi bi-tags-fill"></i>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${totalCategories}">10</div>
+                    <div class="stat-title">Categories</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-box">
+                <div class="stat-icon-wrapper green">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${totalSuppliers}">3</div>
+                    <div class="stat-title">Suppliers</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-box">
+                <div class="stat-icon-wrapper orange">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div>
+                    <div class="stat-number" th:text="${lowStockCount}">0</div>
+                    <div class="stat-title">Low Stock Items</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Quick Stock Table (Only visible for ADMIN role) -->
+    <div sec:authorize="hasRole('ADMIN')">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold m-0 text-light">
+                <i class="bi bi-speedometer2 me-2" style="color: var(--primary-blue);"></i>Admin Inventory Quick Management
+            </h5>
+            <div class="d-flex gap-2">
+                <a th:href="@{/products}" class="btn btn-sm btn-outline-secondary font-weight-bold">
+                    <i class="bi bi-grid-3x3-gap-fill me-1"></i>View All Products
+                </a>
+                <a th:href="@{/products/add}" class="btn btn-sm btn-primary fw-bold" style="background: var(--primary-blue-btn); border: none;" sec:authorize="hasRole('ADMIN')" id="btn-add-product">
+                    <i class="bi bi-plus-lg me-1"></i>Add New Product
+                </a>
+            </div>
+        </div>
+
+        <div class="table-startech">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Price (BDT)</th>
+                        <th>Stock Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="product : ${recentProducts}">
+                        <td>
+                            <strong class="text-light" th:text="${product.name}">Product Name</strong>
+                            <div class="text-muted" style="font-size: 0.76rem;" th:text="${product.description}">Description</div>
+                        </td>
+                        <td>
+                            <span class="badge-cat" th:text="${product.category != null ? product.category.name : 'Uncategorized'}">GPU</span>
+                        </td>
+                        <td>
+                            <strong style="color: var(--brand-red);" th:text="'৳' + ${#numbers.formatDecimal(product.price, 1, 2)}">৳0.00</strong>
+                        </td>
+                        <td>
+                            <span th:class="${product.stockQuantity > 10 ? 'badge-stock-in' : (product.stockQuantity > 0 ? 'badge-stock-low' : 'badge-stock-out')}"
+                                  th:text="${product.stockQuantity > 10 ? 'In Stock (' + product.stockQuantity + ')' : (product.stockQuantity > 0 ? 'Low Stock (' + product.stockQuantity + ')' : 'Out of Stock')}">
+                                In Stock
+                            </span>
+                        </td>
+                        <td>
+                            <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn-startech-secondary btn-sm me-1">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                            <a th:href="@{/products/delete/{id}(id=${product.id})}" 
+                               class="btn-startech-danger btn-sm"
+                               sec:authorize="hasRole('ADMIN')"
+                               onclick="return confirm('Delete this product?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(recentProducts)}">
+                        <td colspan="5" class="text-center py-4 text-muted">
+                            No products available in inventory.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Featured Products Grid (Visible for non-admin users: guests & regular users) -->
+    <div sec:authorize="!hasRole('ADMIN')">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold m-0 text-light">
+                <i class="bi bi-fire me-2" style="color: var(--primary-blue);"></i>Featured Components
+            </h5>
+            <a th:href="@{/products}" class="btn btn-sm btn-outline-secondary fw-bold">
+                <i class="bi bi-grid-3x3-gap-fill me-1"></i>View All Products
+            </a>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3" th:each="product : ${featuredProducts}">
+                    <!-- Image Box -->
+                    <div class="product-img-wrapper">
+                        <img th:if="${product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}"
+                             th:src="@{${product.imageUrl}}"
+                             th:alt="${product.name}"
+                             style="width: 100%; height: 100%; object-fit: contain; padding: 6px;">
+                        <th:block th:if="${product.imageUrl == null or #strings.isEmpty(product.imageUrl)}">
+                            <i class="bi bi-cpu" th:if="${product.category != null and product.category.name == 'CPU'}"></i>
+                            <i class="bi bi-gpu-card" th:if="${product.category != null and product.category.name == 'GPU'}"></i>
+                            <i class="bi bi-memory" th:if="${product.category != null and product.category.name == 'RAM'}"></i>
+                            <i class="bi bi-hdd-fill" th:if="${product.category != null and product.category.name == 'Storage'}"></i>
+                            <i class="bi bi-motherboard" th:if="${product.category != null and product.category.name == 'Motherboard'}"></i>
+                            <i class="bi bi-plug-fill" th:if="${product.category != null and product.category.name == 'PSU'}"></i>
+                            <i class="bi bi-fan" th:if="${product.category != null and product.category.name == 'Cooling'}"></i>
+                            <i class="bi bi-pc-display" th:if="${product.category != null and product.category.name == 'Case'}"></i>
+                            <i class="bi bi-keyboard-fill" th:if="${product.category != null and product.category.name == 'Peripheral'}"></i>
+                            <i class="bi bi-wifi" th:if="${product.category != null and product.category.name == 'Networking'}"></i>
+                        </th:block>
+                    </div>
+
+                    <!-- Product Title & Inline Low-Profile Stock Tag -->
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                        <div class="product-title m-0 flex-grow-1">
+                            <a th:href="@{/products}" th:text="${product.name}">Product Name</a>
+                        </div>
+                        <span class="stock-status-inline"
+                              th:classappend="${product.stockQuantity > 10 ? 'in-stock' : (product.stockQuantity > 0 ? 'low-stock' : 'out-stock')}"
+                              th:text="${product.stockQuantity > 10 ? 'In Stock' : (product.stockQuantity > 0 ? 'Low Stock' : 'Out of Stock')}">
+                            In Stock
+                        </span>
+                    </div>
+
+                    <!-- Specs List -->
+                    <ul class="product-specs">
+                        <li th:text="${product.description}">Specs</li>
+                        <li>Official Brand Warranty</li>
+                        <li th:text="'Category: ' + ${product.category != null ? product.category.name : 'Hardware'}">Category</li>
+                    </ul>
+
+                    <!-- BDT Price -->
+                    <div class="product-price-section">
+                        <span class="current-price" th:text="'৳' + ${#numbers.formatDecimal(product.price, 1, 0)}">৳0</span>
+                        <span class="badge badge-cat ms-auto" th:text="${product.category != null ? product.category.name : 'N/A'}">GPU</span>
+                    </div>
+
+                    <!-- View Button -->
+                    <div class="card-footer-btns">
+                        <a th:href="@{/products}" class="btn-startech-primary">
+                            <i class="bi bi-eye"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

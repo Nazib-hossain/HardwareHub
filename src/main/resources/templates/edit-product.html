@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: header-css('Edit Component — StarTech & Techland')}"></head>
+<body style="background-color: var(--bg-main);">
+
+<!-- Navbar & Category Header -->
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold text-dark m-0">Edit Component Details</h4>
+                <a th:href="@{/products}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Products
+                </a>
+            </div>
+
+            <!-- Edit Product Form Box -->
+            <form th:action="@{/products/edit/{id}(id=${product.id})}" th:object="${product}" method="post" class="form-startech" id="edit-product-form">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Component Name <span class="text-danger">*</span></label>
+                    <input type="text" th:field="*{name}" class="form-control" id="name" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="description" class="form-label">Key Specifications &amp; Features</label>
+                    <textarea th:field="*{description}" class="form-control" id="description" rows="3"></textarea>
+                </div>
+
+                <!-- Price & Stock -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="price" class="form-label">Price (৳ BDT) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light fw-bold" style="font-size: 0.85rem;">৳</span>
+                            <input type="number" step="0.01" min="0" th:field="*{price}" class="form-control" id="price" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="stockQuantity" class="form-label">Stock Quantity <span class="text-danger">*</span></label>
+                        <input type="number" min="0" th:field="*{stockQuantity}" class="form-control" id="stockQuantity" required>
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div class="mb-4">
+                    <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                    <select th:field="*{category.id}" class="form-select" id="category" required>
+                        <option value="" disabled>Select Category</option>
+                        <option th:each="cat : ${categories}"
+                                th:value="${cat.id}"
+                                th:text="${cat.name}"
+                                th:selected="${product.category != null and product.category.id == cat.id}">Category</option>
+                    </select>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end border-top pt-3">
+                    <a th:href="@{/products}" class="btn btn-light border px-4">Cancel</a>
+                    <button type="submit" class="btn btn-danger px-4 fw-bold" id="btn-update-product">
+                        <i class="bi bi-check-lg me-1"></i>Update Component
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

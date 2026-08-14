@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: header-css('Suppliers & Distributors — StarTech & Techland')}"></head>
+<body style="background-color: var(--bg-main);">
+
+<!-- Navbar & Category Header -->
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1" style="font-size: 0.8rem;">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active">Suppliers</li>
+                </ol>
+            </nav>
+            <h4 class="fw-bold text-dark m-0">Authorized Component Distributors &amp; Suppliers</h4>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-startech">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Supplier / Distributor Name</th>
+                    <th>Contact Email</th>
+                    <th>Phone Hotline</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="supplier, iter : ${suppliers}">
+                    <td th:text="${iter.count}">1</td>
+                    <td>
+                        <strong th:text="${supplier.name}">Supplier Name</strong>
+                        <div class="text-muted" style="font-size: 0.76rem;">Official Brand Supplier</div>
+                    </td>
+                    <td>
+                        <i class="bi bi-envelope me-1 text-danger"></i>
+                        <span th:text="${supplier.contactEmail}">email@example.com</span>
+                    </td>
+                    <td>
+                        <i class="bi bi-telephone me-1 text-primary"></i>
+                        <span th:text="${supplier.phone}">+1-800-000-0000</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-stock-in">Active Supplier</span>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(suppliers)}">
+                    <td colspan="5" class="text-center py-4 text-muted">No suppliers found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: header-css('Component Categories — StarTech & Techland')}"></head>
+<body style="background-color: var(--bg-main);">
+
+<!-- Navbar & Category Header -->
+<div th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1" style="font-size: 0.8rem;">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active">Categories</li>
+                </ol>
+            </nav>
+            <h4 class="fw-bold text-dark m-0">Browse Hardware &amp; PC Components by Category</h4>
+        </div>
+    </div>
+
+    <!-- Category Grid Cards -->
+    <div class="row g-3">
+        <div class="col-6 col-md-4 col-lg-3" th:each="category : ${categories}">
+            <a th:href="@{/products(category=${category.name})}" class="cat-grid-card">
+                <div class="cat-icon">
+                    <i class="bi bi-cpu" th:if="${category.name == 'CPU'}"></i>
+                    <i class="bi bi-gpu-card" th:if="${category.name == 'GPU'}"></i>
+                    <i class="bi bi-memory" th:if="${category.name == 'RAM'}"></i>
+                    <i class="bi bi-hdd-fill" th:if="${category.name == 'Storage'}"></i>
+                    <i class="bi bi-motherboard" th:if="${category.name == 'Motherboard'}"></i>
+                    <i class="bi bi-plug-fill" th:if="${category.name == 'PSU'}"></i>
+                    <i class="bi bi-fan" th:if="${category.name == 'Cooling'}"></i>
+                    <i class="bi bi-pc-display" th:if="${category.name == 'Case'}"></i>
+                    <i class="bi bi-keyboard-fill" th:if="${category.name == 'Peripheral'}"></i>
+                    <i class="bi bi-wifi" th:if="${category.name == 'Networking'}"></i>
+                    <i class="bi bi-tools" th:if="${category.name != 'CPU' and category.name != 'GPU' and category.name != 'RAM' and category.name != 'Storage' and category.name != 'Motherboard' and category.name != 'PSU' and category.name != 'Cooling' and category.name != 'Case' and category.name != 'Peripheral' and category.name != 'Networking'}"></i>
+                </div>
+                <div class="cat-name" th:text="${category.name}">Category Name</div>
+                <div class="cat-count" th:text="${category.products != null ? category.products.size() : 0} + ' Available Items'">0 Items</div>
+                <p class="text-muted mt-2 mb-0" style="font-size: 0.76rem;" th:text="${category.description}">Component description</p>
+            </a>
+        </div>
+
+        <div class="col-12" th:if="${#lists.isEmpty(categories)}">
+            <div class="bg-white p-5 text-center rounded border shadow-sm">
+                <i class="bi bi-tags fs-1 text-muted"></i>
+                <h5 class="mt-3 text-dark">No Categories Available</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+
+</body>
+</html>
